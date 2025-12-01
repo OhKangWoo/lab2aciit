@@ -1,0 +1,28 @@
+name: Open Issue via GitHub CLI
+
+on:
+  workflow_dispatch:  # Permite declanșarea manuală din GitHub
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository-ul
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Set up GitHub CLI
+      - name: Install GitHub CLI
+        run: sudo apt-get update && sudo apt-get install -y gh
+
+      # 3. Authenticate GitHub CLI folosind GITHUB_TOKEN
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      # 4. Creează o issue
+      - name: Create an issue
+        run: |
+          gh issue create \
+            --title "Issue creată automat din workflow" \
+            --body "Aceasta este o issue generată automat folosind workflow-ul GitHub Actions."
