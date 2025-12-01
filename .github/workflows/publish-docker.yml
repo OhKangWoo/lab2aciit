@@ -25,9 +25,9 @@ jobs:
       # 3. Build Docker image
       - name: Build Docker Image
         run: |
-          docker build -t mydockeruser/my-app:latest .
+          docker build -t ohkangwoo/my-app:latest .
 
       # 4. Push Docker image
       - name: Push Docker Image
         run: |
-          docker push mydockeruser/my-app:latest
+          docker push ohkangwoo/my-app:latest
