@@ -1,14 +1,17 @@
 name: 'Hello World'
 description: 'Greet someone'
+
 inputs:
-  who-to-greet:  # id of input
+  who-to-greet:
     description: 'Who to greet'
     required: true
     default: 'World'
+
 outputs:
   random-number:
     description: "Random number"
     value: ${{ steps.random-number-generator.outputs.random-number }}
+
 runs:
   using: "composite"
   steps:
@@ -28,11 +31,11 @@ runs:
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
-        
+
     - name: Make goodbye.sh executable
       run: chmod +x $GITHUB_ACTION_PATH/goodbye.sh
-  
-    - name: Run goodbye.sh
-      run: goodbye.sh
       shell: bash
 
+    - name: Run goodbye.sh
+      run: $GITHUB_ACTION_PATH/goodbye.sh
+      shell: bash
