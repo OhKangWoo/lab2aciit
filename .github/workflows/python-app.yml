@@ -35,6 +35,7 @@ jobs:
       # 4. Rulează teste cu pytest
       - name: Run tests
         run: |
+          export PYTHONPATH=$PYTHONPATH:.
           pytest tests/test_math_ops.py --junitxml=junit/test-results-${{ matrix.python-version }}.xml
 
       # 5. Upload rezultate teste
