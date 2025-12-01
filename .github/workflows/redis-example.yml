@@ -1,23 +1,36 @@
-name: Redis Example
-
+name: Redis Service Example
 on:
   workflow_dispatch:
 
 jobs:
-  test-redis:
+  redis-test:
     runs-on: ubuntu-latest
+    container: ubuntu:22.04  
+
     services:
       redis:
-        image: redis:7.0
+        image: redis
         ports:
           - 6379:6379
-        command: ["redis-server", "--requirepass", "mysecretpassword"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - name: Install Redis CLI
-        run: sudo apt-get update && sudo apt-get install -y redis-tools
+      - name: Install redis-cli
+        run: apt-get update && apt-get install -y redis-tools
 
-      - name: Test Redis connection
-        run: redis-cli -a mysecretpassword ping
+      - name: Wait for Redis
+        run: |
+          for i in {1..10}; do
+            if redis-cli -h redis ping; then
+              echo "Redis is ready!"
+              exit 0
+            fi
+            echo "Waiting for Redis..."
+            sleep 3
+          done
+          echo "Redis did not respond in time" && exit 1
