@@ -1,0 +1,46 @@
+name: Python CI
+
+# Rulează workflow-ul la fiecare push și pull request
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      # 1. Checkout cod
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      # 2. Setup Python
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'  # cachează dependențele pentru viteză
+
+      # 3. Instalează dependențe
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Rulează teste cu pytest
+      - name: Run tests
+        run: |
+          pytest tests/test_math_ops.py --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+
+      # 5. Upload rezultate teste
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results-${{ matrix.python-version }}
+          path: junit/test-results-${{ matrix.python-version }}.xml
+        if: ${{ always() }}  # upload chiar dacă testele eșuează
